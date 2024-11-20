@@ -37,6 +37,7 @@ class ChatModel:
                 model=self.model,
                 messages=messages
             )
+            # 단순히 content를 반환
             return response.choices[0].message.content
         except Exception as e:
             return f"죄송합니다. 오류가 발생했습니다: {str(e)}"

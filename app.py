@@ -1,35 +1,36 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from chat_model import ChatModel
-import logging
 
 app = Flask(__name__)
-# 로깅 설정 추가
-logging.basicConfig(level=logging.DEBUG)
+CORS(app)
 
+# ChatModel 인스턴스 생성
 try:
     chat_model = ChatModel()
-    logging.info("ChatModel successfully initialized")
+    print("ChatModel 초기화 성공!")
 except Exception as e:
-    logging.error(f"Failed to initialize ChatModel: {str(e)}")
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+    print(f"ChatModel 초기화 실패: {str(e)}")
 
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        data = request.json
-        message = data.get('message')
-        logging.info(f"Received message: {message}")
+        data = request.get_json()
+        message = data.get('message', '')
+        print(f"받은 메시지: {message}")  # 디버깅용
         
+        # ChatModel을 사용하여 응답 생성
         response = chat_model.get_response(message)
-        logging.info(f"Bot response: {response}")
+        print(f"생성된 응답: {response}")  # 디버깅용
         
-        return jsonify({'response': response})
+        return jsonify({"response": response})
     except Exception as e:
-        logging.error(f"Error in chat route: {str(e)}")
-        return jsonify({'response': '오류가 발생했습니다.'}), 500
+        print(f"오류 발생: {str(e)}")  # 디버깅용
+        return jsonify({"response": f"오류가 발생했습니다: {str(e)}"})
+
+@app.route('/')
+def home():
+    return jsonify({"message": "서버가 정상적으로 실행 중입니다."})
 
 if __name__ == '__main__':
     app.run(debug=True)
