@@ -14,6 +14,7 @@ https://github.com/user-attachments/assets/fc7def39-daaf-400c-a3c9-dfe00cb73d94
 ### 프로젝트 시작
 ```
 conda activate chatbot
+cd client
 npm run dev
 ```
 
