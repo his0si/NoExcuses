@@ -34,3 +34,34 @@ def home():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+from flask import Flask, request, jsonify
+from chat_model import ChatModel
+from rl_agent import RLChatbot
+
+app = Flask(__name__)
+chat_model = ChatModel()
+rl_agent = RLChatbot(chat_model)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_input = data['message']
+    conversation_history = data.get('history', '')
+    
+    # RL 에이전트를 통해 응답 생성
+    response, temperature = rl_agent.generate_response(user_input, conversation_history)
+    
+    # 사용자 피드백이 있는 경우 학습
+    if 'feedback' in data:
+        reward = float(data['feedback'])
+        rl_agent.train_step(conversation_history + user_input + response, reward)
+    
+    return jsonify({
+        'response': response,
+        'temperature': temperature
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True)
