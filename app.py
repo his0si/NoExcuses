@@ -65,3 +65,88 @@ def chat():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+from feedback import FeedbackSystem
+
+app = Flask(__name__)
+feedback_system = FeedbackSystem()
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_input = data['message']
+    conversation_history = data.get('history', '')
+    
+    # 응답 생성
+    response, temperature = rl_agent.generate_response(user_input, conversation_history)
+    
+    return jsonify({
+        'response': response,
+        'temperature': temperature
+    })
+
+@app.route('/feedback', methods=['POST'])
+def submit_feedback():
+    data = request.json
+    feedback_data = {
+        'relevance': data.get('relevance', 0),
+        'helpfulness': data.get('helpfulness', 0),
+        'clarity': data.get('clarity', 0)
+    }
+    
+    # 보상 계산
+    reward = feedback_system.calculate_reward(feedback_data)
+    
+    # RL 에이전트 학습
+    conversation_history = data.get('history', '')
+    loss = rl_agent.train_step(conversation_history, reward)
+    
+    return jsonify({
+        'status': 'success',
+        'reward': reward,
+        'loss': loss
+    })
+
+
+from implicit_feedback import ImplicitFeedbackSystem
+from quality_checker import ResponseQualityChecker
+from conversation_analyzer import ConversationAnalyzer
+
+app = Flask(__name__)
+implicit_feedback = ImplicitFeedbackSystem()
+quality_checker = ResponseQualityChecker()
+conversation_analyzer = ConversationAnalyzer()
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    user_input = data['message']
+    conversation_history = data.get('history', '')
+    
+    # 응답 생성
+    response, temperature = rl_agent.generate_response(user_input, conversation_history)
+    
+    # 자동 피드백 수집
+    conversation_data = {
+        'message': user_input,
+        'response': response,
+        'history': conversation_history,
+        'response_time': data.get('response_time'),
+        'continued_conversation': data.get('continued_conversation', True)
+    }
+    
+    # 다양한 방식의 보상 계산
+    implicit_reward = implicit_feedback.calculate_implicit_reward(conversation_data)
+    quality_score = quality_checker.evaluate_response(response, user_input)
+    conversation_score = conversation_analyzer.analyze_conversation(conversation_history)
+    
+    # 종합 보상 계산
+    total_reward = (implicit_reward + quality_score + conversation_score) / 3
+    
+    # RL 에이전트 학습
+    rl_agent.train_step(conversation_history, total_reward)
+    
+    return jsonify({
+        'response': response,
+        'temperature': temperature
+    })
