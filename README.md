@@ -46,6 +46,9 @@ ML: TensorFlow, PPO(Proximal Policy Optimization)
 ├─ 🐍 app.py                         # Flask 백엔드 메인 애플리케이션
 ├─ 🐍 chat_model.py                  # ChatGPT API 연동 로직
 ├─ 🐍 rl_agent.py                    # 강화학습(Reinforcement Learning) 에이전트를 구현한 파일
+├─ 🐍 feedback.py                    # 암시적 피드백 수집
+├─ 🐍 quality_checker.py             # 자동 품질 평가
+├─ 🐍 conversation_analyzer.py       # 대화 패턴 분석
 ├─ 📄 package.json                   # 프로젝트 의존성 및 스크립트 정의
 ├─ 📄 .env                           # 환경 변수 파일 (API 키 등)
 ├─ 📄 .gitignore
