@@ -6,7 +6,7 @@ AI로 강화된 잔소리로 게으름을 박살내자!
 <summary> 기술 시현 영상 </summary>
 <div markdown="1">    
   
-https://github.com/user-attachments/assets/fc7def39-daaf-400c-a3c9-dfe00cb73d94
+https://github.com/user-attachments/assets/ebf1b4da-40e6-42bf-8c3a-e119a41ff54d
   
 </div>
 </details>
